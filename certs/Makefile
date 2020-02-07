@@ -175,7 +175,7 @@ $(O)/gen/chain/wildcard-expired.pem: $(O)/gen/crt/wildcard-expired.crt $(O)/gen/
 $(O)/gen/crt/wildcard-untrusted-root.crt: src/conf/wildcard.conf $(O)/gen/csr/wildcard-main.csr $(O)/gen/key/ca-untrusted-root.key $(O)/gen/crt/ca-untrusted-root.crt
 	./tool sign $@ $(D) $(SIGN_LEAF_DEFAULTS) $^
 CHAINS_PROD += $(O)/gen/chain/wildcard-untrusted-root.pem
-$(O)/gen/chain/wildcard-untrusted-root.pem: $(O)/gen/crt/wildcard-untrusted-root.crt
+$(O)/gen/chain/wildcard-untrusted-root.pem: $(O)/gen/crt/wildcard-untrusted-root.crt $(O)/gen/crt/ca-untrusted-root.crt
 	./tool chain $@ $(D) $^
 
 ################################
@@ -358,6 +358,16 @@ $(O)/gen/chain/subdomain-invalid-expected-sct.pem: $(O)/gen/crt/subdomain-invali
 	./tool chain $@ $(D) $^
 
 ################################
+# Note: this is just a regular cert in `test`
+$(O)/gen/csr/subdomain-no-sct.csr: src/conf/subdomain-no-sct.conf $(O)/gen/key/leaf-main.key
+	./tool gen-csr $@ $(D) $^
+$(O)/gen/crt/subdomain-no-sct.crt: src/conf/subdomain-no-sct.conf $(O)/gen/csr/subdomain-no-sct.csr $(O)/gen/key/ca-intermediate.key $(O)/gen/crt/ca-intermediate.crt
+	./tool sign $@ $(D) $(SIGN_LEAF_DEFAULTS) $^
+CHAINS_PROD += $(O)/gen/chain/subdomain-no-sct.pem
+$(O)/gen/chain/subdomain-no-sct.pem: $(O)/gen/crt/subdomain-no-sct.crt $(O)/gen/crt/ca-intermediate.crt
+	./tool chain $@ $(D) $^
+
+################################
 $(O)/gen/csr/subdomain-superfish.csr: src/conf/subdomain-superfish.conf $(O)/gen/key/leaf-main.key
 	./tool gen-csr $@ $(D) $^
 $(O)/gen/crt/subdomain-superfish.crt: src/conf/subdomain-superfish.conf $(O)/gen/csr/subdomain-superfish.csr src/key/ca-superfish.key src/crt/ca-superfish.crt
@@ -436,6 +446,34 @@ $(O)/gen/crt/subdomain-captive-portal.crt: src/conf/subdomain-captive-portal.con
 	./tool sign $@ $(D) $(SIGN_LEAF_DEFAULTS) $^
 CHAINS_PROD += $(O)/gen/chain/subdomain-captive-portal.pem
 $(O)/gen/chain/subdomain-captive-portal.pem: $(O)/gen/crt/subdomain-captive-portal.crt $(O)/gen/crt/ca-intermediate.crt
+	./tool chain $@ $(D) $^
+
+################################
+$(O)/gen/key/leaf-blocked-interception.key:
+	./tool gen-key $@ $(D) 2048
+
+################################
+# Note: this is just a regular cert in `test`
+$(O)/gen/csr/subdomain-blocked-interception.csr: src/conf/subdomain-blocked-interception.conf $(O)/gen/key/leaf-blocked-interception.key
+	./tool gen-csr $@ $(D) $^
+$(O)/gen/crt/subdomain-blocked-interception.crt: src/conf/subdomain-blocked-interception.conf $(O)/gen/csr/subdomain-blocked-interception.csr $(O)/gen/key/ca-intermediate.key $(O)/gen/crt/ca-intermediate.crt
+	./tool sign $@ $(D) $(SIGN_LEAF_DEFAULTS) $^
+CHAINS_PROD += $(O)/gen/chain/subdomain-blocked-interception.pem
+$(O)/gen/chain/subdomain-blocked-interception.pem: $(O)/gen/crt/subdomain-blocked-interception.crt $(O)/gen/crt/ca-intermediate.crt
+	./tool chain $@ $(D) $^
+
+################################
+$(O)/gen/key/leaf-known-interception.key:
+	./tool gen-key $@ $(D) 2048
+
+################################
+# Note: this is just a regular cert in `test`
+$(O)/gen/csr/subdomain-known-interception.csr: src/conf/subdomain-known-interception.conf $(O)/gen/key/leaf-known-interception.key
+	./tool gen-csr $@ $(D) $^
+$(O)/gen/crt/subdomain-known-interception.crt: src/conf/subdomain-known-interception.conf $(O)/gen/csr/subdomain-known-interception.csr $(O)/gen/key/ca-intermediate.key $(O)/gen/crt/ca-intermediate.crt
+	./tool sign $@ $(D) $(SIGN_LEAF_DEFAULTS) $^
+CHAINS_PROD += $(O)/gen/chain/subdomain-known-interception.pem
+$(O)/gen/chain/subdomain-known-interception.pem: $(O)/gen/crt/subdomain-known-interception.crt $(O)/gen/crt/ca-intermediate.crt
 	./tool chain $@ $(D) $^
 
 
